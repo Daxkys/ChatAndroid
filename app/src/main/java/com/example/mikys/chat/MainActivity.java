@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sendMessage();
                 Snackbar.make(view, "Mensaje enviado", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        connectWebSocket();
     }
 
     @Override
