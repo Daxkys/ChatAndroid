@@ -1,9 +1,11 @@
 package com.example.mikys.chat;
 
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,15 +21,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     WebSocketClient cliente;
+    String nickname ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        connectWebSocket();
+        crearDialogo();
     }
 
     @Override
@@ -107,22 +113,23 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void WebView(){
+    private void WebView() {
         WebView visor = null; //(WebView) findViewById(R.id.VisorWeb);
         visor.loadUrl("https://servidor-android-mikys.c9users.io/");
         visor.getSettings().setJavaScriptEnabled(true);
     }
+
     private void connectWebSocket() {
         URI uri;
         try {
             //https://servidor-android-mikys.c9users.io/
-            uri = new URI("ws://websockethost:8080");
+            uri = new URI("ws://192.168.1.150:81");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
         }
-
-        cliente = new WebSocketClient(uri) {
+        Map<String, String> headers = new HashMap<>();
+        cliente = new WebSocketClient(uri, new Draft_17(), headers, 0) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
@@ -130,7 +137,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onMessage(String s) {
-                final String message = s+"\n";
+                final String message = s + "\n";
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -157,5 +164,30 @@ public class MainActivity extends AppCompatActivity
         EditText editText = (EditText) findViewById(R.id.mensaje);
         cliente.send(editText.getText().toString());
         editText.setText("");
+    }
+
+    public void crearDialogo() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Nombre de usuario:");
+
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+               nickname  = input.getEditableText().toString();
+                connectWebSocket();
+            }
+        });
+
+        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alert.create();
+        alert.show();
     }
 }
