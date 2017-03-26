@@ -15,27 +15,15 @@
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp">
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/mensaje"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="sendMessage"
-                android:text="Enviar" />
-
-            <EditText
-                android:id="@+id/mensaje"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Escribe aqui..."
-                android:inputType="textMultiLine" />
-
-        </LinearLayout>
+            android:ems="10"
+            android:hint="Escribe aqui..."
+            android:inputType="textMultiLine"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="0dp" />
 
         <TextView
             android:id="@+id/listado"

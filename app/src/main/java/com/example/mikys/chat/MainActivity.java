@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         URI uri;
         try {
             //https://servidor-android-mikys.c9users.io/
-            uri = new URI("ws://192.168.1.150:81");
+            uri = new URI("ws://servidor-android-mikys.c9users.io:8081");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -137,12 +137,12 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onMessage(String s) {
-                final String message = s + "\n";
+                final String message = s;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         TextView ListaMensajes = (TextView) findViewById(R.id.listado);
-                        ListaMensajes.setText(ListaMensajes.getText() + message);
+                        ListaMensajes.append(ListaMensajes.getText() + message + "\n");
                     }
                 });
             }
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity
 
     public void sendMessage() {
         EditText editText = (EditText) findViewById(R.id.mensaje);
-        cliente.send(editText.getText().toString());
+        //cliente.send(editText.getText().toString());
         editText.setText("");
     }
 
