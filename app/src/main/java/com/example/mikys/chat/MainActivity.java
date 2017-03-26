@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -106,9 +107,15 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void WebView(){
+        WebView visor = null; //(WebView) findViewById(R.id.VisorWeb);
+        visor.loadUrl("https://servidor-android-mikys.c9users.io/");
+        visor.getSettings().setJavaScriptEnabled(true);
+    }
     private void connectWebSocket() {
         URI uri;
         try {
+            //https://servidor-android-mikys.c9users.io/
             uri = new URI("ws://websockethost:8080");
         } catch (URISyntaxException e) {
             e.printStackTrace();
