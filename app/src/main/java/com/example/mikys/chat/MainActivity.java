@@ -142,4 +142,10 @@ public class MainActivity extends AppCompatActivity
         };
         cliente.connect();
     }
+
+    public void sendMessage() {
+        EditText editText = (EditText) findViewById(R.id.mensaje);
+        cliente.send(editText.getText().toString());
+        editText.setText("");
+    }
 }
