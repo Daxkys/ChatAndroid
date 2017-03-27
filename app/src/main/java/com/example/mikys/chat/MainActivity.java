@@ -162,8 +162,7 @@ public class MainActivity extends AppCompatActivity
                             String msg = recibe.getString("msg");
                             String privado = recibe.getString("privado");
                             String dst = recibe.getString("dst");
-
-
+                            
                             String frase = usuario + " to " + dst + " [" + privado + "]" + ":\n" + msg;
                             TextView ListaMensajes = (TextView) findViewById(R.id.listado);
                             ListaMensajes.append(frase + "\n");
@@ -205,7 +204,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             if (destino.getText().toString().isEmpty()) {
-                enviar.put("dst", "ALL"));
+                enviar.put("dst", "ALL");
             } else {
                 enviar.put("dst", destino.getText().toString());
             }
