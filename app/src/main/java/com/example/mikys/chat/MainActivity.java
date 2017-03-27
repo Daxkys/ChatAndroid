@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity
 
     private WebSocketClient cliente;
     private String nickname = "";
-
+    FloatingActionButton fab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setEnabled(false);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,7 +111,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_nickname) {
-
+            fab.setEnabled(true);
+            Toast.makeText(MainActivity.this, "enviado nick", Toast.LENGTH_SHORT).show();
+            try {
+                cliente.send(String.valueOf(new JSONObject().put("id",nickname)));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } else if (id == R.id.nav_chat) {
 
         }
@@ -138,15 +146,7 @@ public class MainActivity extends AppCompatActivity
         cliente = new WebSocketClient(uri, new Draft_17(), headers, 0) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
-                Toast.makeText(MainActivity.this, "conectado", Toast.LENGTH_SHORT).show();
 
-                JSONObject loggin = new JSONObject();
-                try {
-                    loggin.put("id", nickname);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                cliente.send(loggin.toString());
             }
 
             @Override
@@ -162,7 +162,8 @@ public class MainActivity extends AppCompatActivity
                             String privado = recibe.getString("privado");
                             String dst = recibe.getString("dst");
 
-                            String frase = usuario+": "+ msg;
+
+                            String frase = usuario + " to " + dst + " [" + privado + "]" + ":\n" + msg;
                             TextView ListaMensajes = (TextView) findViewById(R.id.listado);
                             ListaMensajes.append(frase + "\n");
                         } catch (JSONException e) {
@@ -188,14 +189,27 @@ public class MainActivity extends AppCompatActivity
      */
     public void sendMessage() throws JSONException {
         EditText mensaje = (EditText) findViewById(R.id.mensaje);
+        CheckBox privado = (CheckBox) findViewById(R.id.privado);
+        EditText destino = (EditText) findViewById(R.id.destino);
 
+        String estado;
+        if (privado.isChecked()) {
+            estado = "true";
+        } else {
+            estado = "false";
+        }
         JSONObject enviar = new JSONObject();
         enviar.put("id", nickname);
         enviar.put("msg", mensaje.getText().toString());
-        enviar.put("privado", "");
-        enviar.put("dst", "");
-        cliente.send(enviar.toString());
-        mensaje.setText("");
+        enviar.put("privado", estado);
+        enviar.put("dst", destino.getText().toString());
+
+        if (mensaje.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Escribe un mensaje", Toast.LENGTH_SHORT).show();
+        } else {
+            cliente.send(enviar.toString());
+            mensaje.setText("");
+        }
     }
 
     /**
