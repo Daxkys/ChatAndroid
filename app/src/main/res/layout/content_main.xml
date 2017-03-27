@@ -15,20 +15,42 @@
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp">
 
-        <EditText
-            android:id="@+id/mensaje"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Escribe aqui..."
-            android:inputType="textMultiLine"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="0dp" />
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/destino"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Para..."
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/mensaje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Escribe aqui..."
+                android:inputType="textMultiLine"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="0dp" />
+
+            <CheckBox
+                android:id="@+id/privado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Privado" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/listado"
             android:layout_width="match_parent"
-            android:layout_height="415dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2.75"
             android:text="" />
 
     </LinearLayout>
