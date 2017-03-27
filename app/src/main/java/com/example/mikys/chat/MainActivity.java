@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_17;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private WebSocketClient cliente;
-    private String nickname ="";
+    private String nickname = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,10 +138,11 @@ public class MainActivity extends AppCompatActivity
         cliente = new WebSocketClient(uri, new Draft_17(), headers, 0) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
-                Log.i("Websocket", "Opened");
+                Toast.makeText(MainActivity.this, "conectado", Toast.LENGTH_SHORT).show();
+
                 JSONObject loggin = new JSONObject();
                 try {
-                    loggin.put("id",nickname);
+                    loggin.put("id", nickname);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -148,38 +150,34 @@ public class MainActivity extends AppCompatActivity
             }
 
             @Override
-            public void onMessage(String s) {
+            public void onMessage(final String s) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        JSONObject recibe = new JSONObject();
-                        String usuario="";
-                        String msg="";
-                        String privado="";
-                        String dst="";
                         try {
-                            usuario = recibe.getString("id");
-                            msg = recibe.getString("msg");
-                            privado = recibe.getString("privado");
-                            dst = recibe.getString("dst");
+                            JSONObject recibe = new JSONObject(s);
+
+                            String usuario = recibe.getString("id");
+                            String msg = recibe.getString("msg");
+                            String privado = recibe.getString("privado");
+                            String dst = recibe.getString("dst");
+
+                            String frase = usuario+": "+ msg;
+                            TextView ListaMensajes = (TextView) findViewById(R.id.listado);
+                            ListaMensajes.append(frase + "\n");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        String frase ="["+privado+"] "+usuario+" to "+ dst+":"+ msg;
-                        TextView ListaMensajes = (TextView) findViewById(R.id.listado);
-                        ListaMensajes.append(ListaMensajes.getText() + frase + "\n");
                     }
                 });
             }
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                Log.i("Websocket", "Closed " + s);
             }
 
             @Override
             public void onError(Exception e) {
-                Log.i("Websocket", "Error " + e.getMessage());
             }
         };
         cliente.connect();
@@ -192,10 +190,10 @@ public class MainActivity extends AppCompatActivity
         EditText mensaje = (EditText) findViewById(R.id.mensaje);
 
         JSONObject enviar = new JSONObject();
-        enviar.put("id",nickname);
-        enviar.put("msg",mensaje.getText().toString());
-        enviar.put("privado","");
-        enviar.put("dst","");
+        enviar.put("id", nickname);
+        enviar.put("msg", mensaje.getText().toString());
+        enviar.put("privado", "");
+        enviar.put("dst", "");
         cliente.send(enviar.toString());
         mensaje.setText("");
     }
@@ -213,7 +211,7 @@ public class MainActivity extends AppCompatActivity
         alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-               nickname  = input.getEditableText().toString();
+                nickname = input.getEditableText().toString();
                 connectWebSocket();
             }
         });
