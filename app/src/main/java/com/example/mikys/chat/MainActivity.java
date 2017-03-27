@@ -22,6 +22,8 @@ import android.widget.TextView;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,8 +33,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    WebSocketClient cliente;
-    String nickname ="";
+    private WebSocketClient cliente;
+    private String nickname ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,11 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage(); // al pulsar el boton flotante envia el mensaje al servidor
+                try {
+                    sendMessage(); // al pulsar el boton flotante envia el mensaje al servidor
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 Snackbar.make(view, "Mensaje enviado", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -132,16 +138,36 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
+                JSONObject loggin = new JSONObject();
+                try {
+                    loggin.put("id",nickname);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                cliente.send(loggin.toString());
             }
 
             @Override
             public void onMessage(String s) {
-                final String message = s;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        JSONObject recibe = new JSONObject();
+                        String usuario="";
+                        String msg="";
+                        String privado="";
+                        String dst="";
+                        try {
+                            usuario = recibe.getString("id");
+                            msg = recibe.getString("msg");
+                            privado = recibe.getString("privado");
+                            dst = recibe.getString("dst");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        String frase ="["+privado+"] "+usuario+" to "+ dst+":"+ msg;
                         TextView ListaMensajes = (TextView) findViewById(R.id.listado);
-                        ListaMensajes.append(ListaMensajes.getText() + message + "\n");
+                        ListaMensajes.append(ListaMensajes.getText() + frase + "\n");
                     }
                 });
             }
@@ -162,10 +188,16 @@ public class MainActivity extends AppCompatActivity
     /**
      * Metodo que recoge el texto del editText y se lo envia al servidor
      */
-    public void sendMessage() {
-        EditText editText = (EditText) findViewById(R.id.mensaje);
-        //cliente.send(editText.getText().toString());
-        editText.setText("");
+    public void sendMessage() throws JSONException {
+        EditText mensaje = (EditText) findViewById(R.id.mensaje);
+
+        JSONObject enviar = new JSONObject();
+        enviar.put("id",nickname);
+        enviar.put("msg",mensaje.getText().toString());
+        enviar.put("privado","");
+        enviar.put("dst","");
+        cliente.send(enviar.toString());
+        mensaje.setText("");
     }
 
     /**
