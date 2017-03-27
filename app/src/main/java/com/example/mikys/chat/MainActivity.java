@@ -1,7 +1,6 @@
 package com.example.mikys.chat;
 
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage();
+                sendMessage(); // al pulsar el boton flotante envia el mensaje al servidor
                 Snackbar.make(view, "Mensaje enviado", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        crearDialogo();
+        quest_nickname(); // al cargar el layout se crea automaticamente la alerta
     }
 
     @Override
@@ -160,13 +159,19 @@ public class MainActivity extends AppCompatActivity
         cliente.connect();
     }
 
+    /**
+     * Metodo que recoge el texto del editText y se lo envia al servidor
+     */
     public void sendMessage() {
         EditText editText = (EditText) findViewById(R.id.mensaje);
         //cliente.send(editText.getText().toString());
         editText.setText("");
     }
 
-    public void crearDialogo() {
+    /**
+     * Metodo que crea una ventana de alerta para recoger el nombre de usuario
+     */
+    public void quest_nickname() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Nombre de usuario:");
 
