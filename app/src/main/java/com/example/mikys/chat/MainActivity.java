@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     private WebSocketClient cliente;
     private String nickname = "";
     FloatingActionButton fab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity
             fab.setEnabled(true);
             Toast.makeText(MainActivity.this, "enviado nick", Toast.LENGTH_SHORT).show();
             try {
-                cliente.send(String.valueOf(new JSONObject().put("id",nickname)));
+                cliente.send(String.valueOf(new JSONObject().put("id", nickname)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -192,23 +193,27 @@ public class MainActivity extends AppCompatActivity
         CheckBox privado = (CheckBox) findViewById(R.id.privado);
         EditText destino = (EditText) findViewById(R.id.destino);
 
-        String estado;
-        if (privado.isChecked()) {
-            estado = "true";
-        } else {
-            estado = "false";
-        }
-        JSONObject enviar = new JSONObject();
-        enviar.put("id", nickname);
-        enviar.put("msg", mensaje.getText().toString());
-        enviar.put("privado", estado);
-        enviar.put("dst", destino.getText().toString());
+        if (!mensaje.getText().toString().isEmpty()) {
+            JSONObject enviar = new JSONObject();
+            enviar.put("id", nickname);
+            enviar.put("msg", mensaje.getText().toString());
 
-        if (mensaje.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Escribe un mensaje", Toast.LENGTH_SHORT).show();
-        } else {
+            if (privado.isChecked()) {
+                enviar.put("privado", "true");
+            } else {
+                enviar.put("privado", "false");
+            }
+
+            if (destino.getText().toString().isEmpty()) {
+                enviar.put("dst", "ALL"));
+            } else {
+                enviar.put("dst", destino.getText().toString());
+            }
+
             cliente.send(enviar.toString());
             mensaje.setText("");
+        } else {
+            Toast.makeText(this, "Escribe un mensaje", Toast.LENGTH_SHORT).show();
         }
     }
 
